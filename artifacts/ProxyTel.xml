@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ProxyTel">
+    <output-path>$PROJECT_DIR$/out/artifacts/ProxyTel</output-path>
+    <root id="archive" name="ProxyTel.jar">
+      <element id="module-output" name="ProxyTel" />
+    </root>
+  </artifact>
+</component>
