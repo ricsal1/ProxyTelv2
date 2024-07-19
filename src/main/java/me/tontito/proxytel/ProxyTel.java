@@ -1,5 +1,6 @@
 package me.tontito.proxytel;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,19 +11,56 @@ import java.util.Hashtable;
 
 public final class ProxyTel extends JavaPlugin {
 
-    protected boolean ProtectListen = true;
+    public final String VERSION = getDescription().getVersion();
+    public boolean echoLogging;
+    public int serverVersion = 0;
+    boolean ProtectListen = true;
+    Hashtable<String, ServerListen.ConnectionCounter> accessControlHash = new Hashtable();
     private int ListenPort;
     private int MinecraftPort;
     private String MinecraftServer;
-    public boolean echoLogging;
     private int logLevel;
     private ServerListen s;
-    private Hashtable hash = new Hashtable();
-    public final String VERSION = getDescription().getVersion();
+    private final Hashtable hash = new Hashtable();
 
     @Override
     public void onEnable() {
-        new UpdateChecker(this);
+        String version = Bukkit.getVersion().toUpperCase();
+
+        if (version.contains("PAPER")) {
+            serverVersion = 1;
+        } else if (version.contains("BUKKIT")) {
+            serverVersion = 2;
+        } else if (version.contains("SPIGOT")) {
+            serverVersion = 3;
+        } else if (version.contains("PURPUR")) {
+            serverVersion = 4;
+        } else if (version.contains("PUFFERFISH")) {
+            serverVersion = 5;
+        } else if (version.contains("-PETAL-")) {
+            serverVersion = 6;
+        } else if (version.contains("-SAKURA-")) {
+            serverVersion = 7;
+        } else if (version.contains("-FOLIA-")) {
+            serverVersion = 8;
+        } else {
+
+            //server type name
+            String minecraftVersion2 = Bukkit.getServer().getName();
+
+            if (minecraftVersion2.toUpperCase().contains("FOLIA")) {
+                serverVersion = 8;
+            } else {
+                getLogger().info("Server type not tested! " + version);
+            }
+        }
+
+        if (serverVersion == 2 || serverVersion == 3) {
+            new UpdateCheckerBukkSpig(this);
+
+        } else if (serverVersion > 0)  { //make sure if identifies a version
+            new UpdateChecker(this);
+        }
 
         getLogger().info(" Loading configs!");
 
@@ -71,17 +109,18 @@ public final class ProxyTel extends JavaPlugin {
 
 
     private void setupSettings() {
-        ProtectListen = getConfig().getBoolean("ProtectListen", true);
         ListenPort = getConfig().getInt("ListenPort");
-        MinecraftPort = getConfig().getInt("MinecraftListen");
+
+        ProtectListen = getConfig().getBoolean("ProtectListen", true);
         echoLogging = getConfig().getBoolean("EchoLogging");
         logLevel = getConfig().getInt("LogLevel");
 
-        MinecraftServer = getConfig().getString("MinecraftServer","127.0.0.1");
+        MinecraftServer = getConfig().getString("MinecraftServer", "127.0.0.1");
+        MinecraftPort = getConfig().getInt("MinecraftListen");
     }
 
 
-    protected void logToFile(String nome, String message) {
+    void logToFile(String nome, String message) {
         try {
             File dataFolder = getDataFolder();
 
@@ -114,7 +153,7 @@ public final class ProxyTel extends JavaPlugin {
     }
 
 
-    protected void logToFile(String nome, byte[] message) {
+    void logToFile(String nome, byte[] message) {
         try {
             File dataFolder = getDataFolder();
 
@@ -153,12 +192,12 @@ public final class ProxyTel extends JavaPlugin {
     }
 
 
-    protected int getLogLevel() {
+    int getLogLevel() {
         return logLevel;
     }
 
 
-    protected void DeleteIpFromSocket(String endereco) {
+    void DeleteIpFromSocket(String endereco) {
         try {
             if (hash.get(endereco) != null) {
                 hash.remove(endereco);
@@ -169,7 +208,7 @@ public final class ProxyTel extends JavaPlugin {
     }
 
 
-    protected void RegisterIpFromSocket(String enderecoExterno, String enderecoPorta) {
+    void RegisterIpFromSocket(String enderecoExterno, String enderecoPorta) {
         try {
             if (hash.get(enderecoPorta) == null) {
                 hash.put(enderecoPorta, enderecoExterno);
@@ -178,5 +217,6 @@ public final class ProxyTel extends JavaPlugin {
             logToFile("ProxyTel", "Missed registry in hash");
         }
     }
+
 
 }

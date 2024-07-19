@@ -1,9 +1,7 @@
 package me.tontito.proxytel;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedReader;
@@ -11,20 +9,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UpdateChecker extends BukkitRunnable {
+public class UpdateCheckerBukkSpig extends BukkitRunnable {
 
     private final ProxyTel main;
     private final String projectName;
 
-    public UpdateChecker(ProxyTel main) {
+    public UpdateCheckerBukkSpig(ProxyTel main) {
         this.main = main;
         projectName = main.getDescription().getName();
 
-        if (main.serverVersion == 8) {
-            run();
-        } else {
-            runTaskLaterAsynchronously(main, 20);
-        }
+        runTaskLaterAsynchronously(main, 20);
     }
 
     public void run() {
@@ -43,12 +37,7 @@ public class UpdateChecker extends BukkitRunnable {
                 promptUpdate(version, url);
             }
         } catch (Exception e) {
-            Bukkit.getLogger().info("[" + projectName + "] Connection exception: " + e.getMessage());
-
-            Bukkit.getConsoleSender().sendMessage(net.kyori.adventure.text.Component
-                    .text("[" + projectName + "] Connection exception: " + e.getMessage())
-                    .color(net.kyori.adventure.text.format.NamedTextColor.RED)
-            );
+            Bukkit.getConsoleSender().sendMessage("[" + projectName + "] " + ChatColor.RED + "Connection exception: " + e.getMessage());
         }
     }
 
@@ -68,17 +57,9 @@ public class UpdateChecker extends BukkitRunnable {
     }
 
     private void promptUpdate(String serverVersion, String Url) {
-        TextComponent component;
 
         if (serverVersion == null) {
-            component = Component.text(" Unknown error checking version");
-
-            Bukkit.getConsoleSender().sendMessage(Component
-                    .text("[" + projectName + "]")
-                    .color(NamedTextColor.RED)
-                    .append(component)
-            );
-
+            Bukkit.getConsoleSender().sendMessage("[" + projectName + "] " + ChatColor.RED + "Unknown error checking version");
             return;
         }
 
@@ -89,24 +70,19 @@ public class UpdateChecker extends BukkitRunnable {
 
         String currentVersion = main.getDescription().getVersion();
         int versionStatus = Utils.checkGreater(serverVersion, currentVersion);
-        NamedTextColor color = NamedTextColor.GRAY;
 
         if (versionStatus == -1) {
-            component = Component.text(" THERE IS A NEW UPDATE AVAILABLE Version: " + serverVersion +
-                    " Download it from here: " + Url, NamedTextColor.GREEN);
+            Bukkit.getConsoleSender().sendMessage("[" + projectName + "] " + ChatColor.GREEN + "THERE IS A NEW UPDATE AVAILABLE Version: " + serverVersion +
+                    " Download it from here: " + Url);
+
         } else if (versionStatus == 0) {
-            component = Component.text(" You have the latest released version", NamedTextColor.GREEN);
+            Bukkit.getConsoleSender().sendMessage("[" + projectName + "] " + ChatColor.DARK_GREEN + "You have the latest released version");
         } else if (versionStatus == 1) {
-            component = Component.text(" Congrats, you are testing a new version!", NamedTextColor.YELLOW);
+            Bukkit.getConsoleSender().sendMessage("[" + projectName + "] " + ChatColor.YELLOW + "Congrats, you are testing a new version!");
         } else {
-            component = Component.text(" Unknown error checking version (" + versionStatus + ")" + serverVersion + "   " + currentVersion, NamedTextColor.RED);
+            Bukkit.getConsoleSender().sendMessage("[" + projectName + "] " + ChatColor.RED + "Unknown error checking version (" + versionStatus + ")" + serverVersion + "   " + currentVersion);
         }
 
-        Bukkit.getConsoleSender().sendMessage(Component
-                .text("[" + projectName + "]")
-                .color(color)
-                .append(component)
-        );
     }
 
 }
