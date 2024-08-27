@@ -1,6 +1,7 @@
 package me.tontito.proxytel;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,6 +23,7 @@ public final class ProxyTel extends JavaPlugin {
     private int logLevel;
     private ServerListen s;
     private final Hashtable hash = new Hashtable();
+
 
     @Override
     public void onEnable() {
@@ -50,6 +52,16 @@ public final class ProxyTel extends JavaPlugin {
 
             if (minecraftVersion2.toUpperCase().contains("FOLIA")) {
                 serverVersion = 8;
+            } else if (version.contains("PAPER")) {
+                    serverVersion = 1;
+            } else if (version.contains("PURPUR")) {
+                serverVersion = 4;
+            } else if (version.contains("PUFFERFISH")) {
+                serverVersion = 5;
+            } else if (version.contains("-PETAL-")) {
+                serverVersion = 6;
+            } else if (version.contains("-SAKURA-")) {
+                serverVersion = 7;
             } else {
                 getLogger().info("Server type not tested! " + version);
             }
@@ -68,6 +80,8 @@ public final class ProxyTel extends JavaPlugin {
         s = new ServerListen(ListenPort, MinecraftServer, MinecraftPort, this);
 
         getLogger().info(VERSION + " enabled!");
+
+        startMetrics();
     }
 
     @Override
@@ -85,8 +99,8 @@ public final class ProxyTel extends JavaPlugin {
 
             config.addDefault("EchoLogging", false);
             config.addDefault("ProtectListen", true);
-            config.addDefault("ListenPort", 22000);
-            config.addDefault("MinecraftListen", 25566);
+            config.addDefault("ListenPort", 25566);
+            config.addDefault("MinecraftListen", 22000);
 
             config.options().copyDefaults(true);
             saveConfig();
@@ -117,6 +131,21 @@ public final class ProxyTel extends JavaPlugin {
 
         MinecraftServer = getConfig().getString("MinecraftServer", "127.0.0.1");
         MinecraftPort = getConfig().getInt("MinecraftListen");
+    }
+
+
+    private void startMetrics() {
+        try {
+            Metrics metrics = new Metrics(this, 23166);
+
+            metrics.addCustomChart(new Metrics.SimplePie("protect_listen", () -> {
+                if (ProtectListen) return "true";
+                return "false";
+            }));
+
+        } catch (Exception e) {
+            getLogger().info(ChatColor.RED + " Failed to register into Bstats");
+        }
     }
 
 

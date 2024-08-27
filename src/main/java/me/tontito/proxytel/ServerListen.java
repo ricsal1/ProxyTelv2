@@ -40,7 +40,9 @@ public class ServerListen extends Thread {
             main.logToFile("ProxyTel", "Listenning on " + port);
             return true;
         } catch (IOException ioexception) {
-            main.getLogger().info("Error starting sockets" + ioexception);
+            main.getLogger().severe("Error start Listenning. Info: " + ioexception);
+            main.getLogger().warning("Make sure you change minecraft port or change ListenPort to a free port exposed to internet. ");
+            main.getLogger().warning("If you are not sure what this means it might be better you don't use this plugin");
             main.logToFile("ProxyTel", "Error starting sockets" + ioexception);
             return false;
         }
@@ -144,7 +146,7 @@ public class ServerListen extends Thread {
         public void dec() {
             int initCounter = counter;
 
-            if (activeConnection > 6 && counter < 19) counter = 19;
+            if (activeConnection > 8 && counter < 19) counter = 19;
 
             if (checkDiffDate() < 60000) {
                 counter++;
