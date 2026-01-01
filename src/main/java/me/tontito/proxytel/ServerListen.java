@@ -27,7 +27,7 @@ public class ServerListen extends Thread {
              }
 
         } catch (Exception ioexception) {
-            main.logToFile("ProxyTel", "Error Starting " + ioexception);
+            main.logToFile("CoolGateway", "Error Starting " + ioexception);
             main.getLogger().info("Error Starting " + ioexception);
         }
     }
@@ -37,13 +37,13 @@ public class ServerListen extends Thread {
         try {
             s = new ServerSocket(port);
             main.getLogger().info("Listenning on " + port);
-            main.logToFile("ProxyTel", "Listenning on " + port);
+            main.logToFile("CoolGateway", "Listenning on " + port);
             return true;
         } catch (IOException ioexception) {
             main.getLogger().severe("Error start Listenning. Info: " + ioexception);
             main.getLogger().warning("Make sure you change minecraft port or change ListenPort to a free port exposed to internet. ");
             main.getLogger().warning("If you are not sure what this means it might be better you don't use this plugin");
-            main.logToFile("ProxyTel", "Error starting sockets" + ioexception);
+            main.logToFile("CoolGateway", "Error starting sockets" + ioexception);
             return false;
         }
     }
@@ -51,7 +51,7 @@ public class ServerListen extends Thread {
 
     public void run() {
         try {
-            main.logToFile("ProxyTel", "Waiting for connections...");
+            main.logToFile("CoolGateway", "Waiting for connections...");
             main.getLogger().info(" Waiting for connections");
 
             while (t != null) {
@@ -83,7 +83,7 @@ public class ServerListen extends Thread {
                     if (main.echoLogging)
                         main.getLogger().info("Error receiving connection " + ioexception);
 
-                    main.logToFile("ProxyTel", "Error receiving connection " + ioexception);
+                    main.logToFile("CoolGateway", "Error receiving connection " + ioexception);
                 }
 
                 sleep(150);
@@ -108,13 +108,13 @@ public class ServerListen extends Thread {
             if (main.echoLogging)
                 main.getLogger().info("Error receiving connection22 " + ioexception);
 
-            main.logToFile("ProxyTel", "Error receiving connection22 " + ioexception);
+            main.logToFile("CoolGateway", "Error receiving connection22 " + ioexception);
         }
     }
 
 
     public void Dispose() {
-        main.logToFile("ProxyTel", "Stopping listenning");
+        main.logToFile("CoolGateway", "Stopping listenning");
         t = null;
         try {
             s.close();
@@ -122,7 +122,7 @@ public class ServerListen extends Thread {
             if (main.echoLogging)
                 main.getLogger().info("Error stopping listenning " + ioexception);
 
-            main.logToFile("ProxyTel", "Error stopping listenning " + ioexception);
+            main.logToFile("CoolGateway", "Error stopping listenning " + ioexception);
         }
     }
 
@@ -152,7 +152,7 @@ public class ServerListen extends Thread {
                 counter++;
 
                 if (initCounter < 20 && counter >= 20) {
-                    main.logToFile("ProxyTel_Access", "Now blocking spam connection from " + getIp());
+                    main.logToFile("CoolGateway_Access", "Now blocking spam connection from " + getIp());
 
                     if (main.echoLogging)
                         main.getLogger().info("Now blocking spam connection from " + getIp());
@@ -162,7 +162,7 @@ public class ServerListen extends Thread {
                 counter--;
 
                 if (initCounter >= 20 && counter < 20) {
-                    main.logToFile("ProxyTel_Access", "Temp Unblocking " + getIp());
+                    main.logToFile("CoolGateway_Access", "Temp Unblocking " + getIp());
 
                     if (main.echoLogging)
                         main.getLogger().info("Temp Unblocking " + getIp());
@@ -179,7 +179,7 @@ public class ServerListen extends Thread {
             int initCounter = counter;
 
             if (user != null && lastUser != null && !user.equals(lastUser) && checkDiffDate() < 60000) {
-                main.logToFile("ProxyTel", user + "  vs  " + lastUser);
+                main.logToFile("CoolGateway", user + "  vs  " + lastUser);
                 aggravation = true;
             }
 
@@ -197,13 +197,13 @@ public class ServerListen extends Thread {
             counter = counter + value;
 
             if (initCounter < 20 && counter >= 20) {
-                main.logToFile("ProxyTel_Access", "Now blocking spam connection from " + getIp());
+                main.logToFile("CoolGateway_Access", "Now blocking spam connection from " + getIp());
 
                 if (main.echoLogging)
                     main.getLogger().info("Now blocking spam connection from " + getIp());
             }
 
-            main.logToFile("ProxyTel", aggravation + " Active:" + activeConnection + " inc:" + value + " bytes:" + countBytes + " dur:" + duration + " allow:" + allowinc + " final:" + counter + "   " + user + "    " + getIp());
+            main.logToFile("CoolGateway", aggravation + " Active:" + activeConnection + " inc:" + value + " bytes:" + countBytes + " dur:" + duration + " allow:" + allowinc + " final:" + counter + "   " + user + "    " + getIp());
 
             date = new Date();
             activeConnection--;
@@ -212,7 +212,7 @@ public class ServerListen extends Thread {
         public void reset() {
             int initCounter = counter;
             //will not reset if having too many active connections
-            main.logToFile("ProxyTel", "--> Active: " + activeConnection + "  counter:" + counter + "  from:" + ip);
+            main.logToFile("CoolGateway", "--> Active: " + activeConnection + "  counter:" + counter + "  from:" + ip);
 
             if (activeConnection >= 8) return;
 
@@ -223,7 +223,7 @@ public class ServerListen extends Thread {
             date = new Date();
 
             if (initCounter >= 20 && counter < 20) {
-                main.logToFile("ProxyTel_Access", "Unblocking " + getIp());
+                main.logToFile("CoolGateway_Access", "Unblocking " + getIp());
 
                 if (main.echoLogging)
                     main.getLogger().info("Unblocking " + getIp());

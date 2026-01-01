@@ -1,5 +1,7 @@
 package me.tontito.proxytel;
 
+import me.tontito.proxytel.utils.Metrics;
+import me.tontito.proxytel.utils.MyBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,7 +16,6 @@ public final class ProxyTel extends JavaPlugin {
 
     public final String VERSION = getDescription().getVersion();
     public boolean echoLogging;
-    public int serverVersion = 0;
     boolean ProtectListen = true;
     Hashtable<String, ServerListen.ConnectionCounter> accessControlHash = new Hashtable();
     private int ListenPort;
@@ -27,52 +28,7 @@ public final class ProxyTel extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        String version = Bukkit.getVersion().toUpperCase();
-
-        if (version.contains("PAPER")) {
-            serverVersion = 1;
-        } else if (version.contains("BUKKIT")) {
-            serverVersion = 2;
-        } else if (version.contains("SPIGOT")) {
-            serverVersion = 3;
-        } else if (version.contains("PURPUR")) {
-            serverVersion = 4;
-        } else if (version.contains("PUFFERFISH")) {
-            serverVersion = 5;
-        } else if (version.contains("-PETAL-")) {
-            serverVersion = 6;
-        } else if (version.contains("-SAKURA-")) {
-            serverVersion = 7;
-        } else if (version.contains("-FOLIA-")) {
-            serverVersion = 8;
-        } else {
-
-            //server type name
-            String minecraftVersion2 = Bukkit.getServer().getName();
-
-            if (minecraftVersion2.toUpperCase().contains("FOLIA")) {
-                serverVersion = 8;
-            } else if (version.contains("PAPER")) {
-                    serverVersion = 1;
-            } else if (version.contains("PURPUR")) {
-                serverVersion = 4;
-            } else if (version.contains("PUFFERFISH")) {
-                serverVersion = 5;
-            } else if (version.contains("-PETAL-")) {
-                serverVersion = 6;
-            } else if (version.contains("-SAKURA-")) {
-                serverVersion = 7;
-            } else {
-                getLogger().info("Server type not tested! " + version);
-            }
-        }
-
-        if (serverVersion == 2 || serverVersion == 3) {
-            new UpdateCheckerBukkSpig(this);
-
-        } else if (serverVersion > 0)  { //make sure if identifies a version
-            new UpdateChecker(this);
-        }
+        MyBukkit myBukkit = new MyBukkit(this);
 
         getLogger().info(" Loading configs!");
 
@@ -81,7 +37,18 @@ public final class ProxyTel extends JavaPlugin {
 
         getLogger().info(VERSION + " enabled!");
 
-        startMetrics();
+        try {
+            myBukkit.runTaskLater(null, null, null, () -> new Metrics(this, 23166), 5);
+        } catch (Exception e) {
+            getLogger().info(ChatColor.RED + " Failed to register into Bstats");
+        }
+
+        try {
+            myBukkit.UpdateChecker(true);
+        } catch (Exception e) {
+            getLogger().info(ChatColor.RED + " Failed to check for new version");
+        }
+
     }
 
     @Override
@@ -131,21 +98,6 @@ public final class ProxyTel extends JavaPlugin {
 
         MinecraftServer = getConfig().getString("MinecraftServer", "127.0.0.1");
         MinecraftPort = getConfig().getInt("MinecraftListen");
-    }
-
-
-    private void startMetrics() {
-        try {
-            Metrics metrics = new Metrics(this, 23166);
-
-            metrics.addCustomChart(new Metrics.SimplePie("protect_listen", () -> {
-                if (ProtectListen) return "true";
-                return "false";
-            }));
-
-        } catch (Exception e) {
-            getLogger().info(ChatColor.RED + " Failed to register into Bstats");
-        }
     }
 
 

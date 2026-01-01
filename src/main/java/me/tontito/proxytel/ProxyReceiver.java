@@ -201,7 +201,7 @@ public class ProxyReceiver extends Thread {
                             local = local + " @" + getCountry(new InetSocketAddress(c.getInetAddress(), c.getPort()));  //not allowed for plugins
 
 
-                        main.logToFile("ProxyTel", "Connection from " + address + local + message);
+                        main.logToFile("CoolGateway", "Connection from " + address + local + message);
 
                         if (main.echoLogging)
                             main.getLogger().info("Connection from " + address + local + message);
@@ -215,7 +215,7 @@ public class ProxyReceiver extends Thread {
                                 userLogin = new String(array).substring(3, 3 + len);
                                 p1.userLogin = userLogin;
 
-                                main.logToFile("ProxyTel", " -------> " + userLogin);
+                                main.logToFile("CoolGateway", " -------> " + userLogin);
                             }
                         }
                         login = false;
@@ -240,7 +240,7 @@ public class ProxyReceiver extends Thread {
                 if (t != null) Dispose(false);
 
                 if (p1 != null) {
-                    main.logToFile("ProxyTel", "Closing connection to " + p1.address + ", after reading " + contaBytes + " bytes, with active time " + ((System.currentTimeMillis() - contaDuracaoLigacao) / 1000) + "s, and total processing time " + (contaLatencia / 1000000) + "ms  for " + contaPackets + " packets");
+                    main.logToFile("CoolGateway", "Closing connection to " + p1.address + ", after reading " + contaBytes + " bytes, with active time " + ((System.currentTimeMillis() - contaDuracaoLigacao) / 1000) + "s, and total processing time " + (contaLatencia / 1000000) + "ms  for " + contaPackets + " packets");
 
                     p1.Dispose(false);
                     p1 = null;
@@ -279,7 +279,7 @@ public class ProxyReceiver extends Thread {
                 //if termination started from server
                 if (p1.address != null && p1.address.equals("Server")) requested = false;
 
-                main.logToFile("ProxyTel", "Closed connection to " + address + " from " + p1.address + ", after reading " + contaBytes + " bytes, with active time " + ((System.currentTimeMillis() - contaDuracaoLigacao) / 1000) + "s, and total processing time " + (contaLatencia / 1000000) + "ms for " + contaPackets + " packets");
+                main.logToFile("CoolGateway", "Closed connection to " + address + " from " + p1.address + ", after reading " + contaBytes + " bytes, with active time " + ((System.currentTimeMillis() - contaDuracaoLigacao) / 1000) + "s, and total processing time " + (contaLatencia / 1000000) + "ms for " + contaPackets + " packets");
 
                 //inc count because not many bytes transfered
                 if (p1.address != null && !p1.address.equals("Server")) {
@@ -295,7 +295,7 @@ public class ProxyReceiver extends Thread {
                 e.printStackTrace();
             }
         } catch (Exception e) {
-            main.logToFile("ProxyTel", "EIe: " + e.getMessage());
+            main.logToFile("CoolGateway", "EIe: " + e.getMessage());
         }
     }
 
